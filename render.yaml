@@ -1,0 +1,24 @@
+
+services:
+  - type: web
+    name: askarg-backend
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port 10000
+    envVars:
+      - key: PERPLEXITY_API_KEY
+        sync: false  # Set in Render Dashboard
+      - key: GOOGLE_APPLICATION_CREDENTIALS
+        value: serviceAccountKey.json  # Should match the file in your repo root
+
+  - type: cron
+    name: askarg-fetch-worker
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python scripts/fetch_and_upload.py
+    schedule: every 5 minutes
+    envVars:
+      - key: PERPLEXITY_API_KEY
+        sync: false  # Set in Render Dashboard
+      - key: GOOGLE_APPLICATION_CREDENTIALS
+        value: serviceAccountKey.json  # Same path as above
